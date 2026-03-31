@@ -27,7 +27,7 @@
 -keepattributes InnerClasses
 -keepnames class kotlinx.coroutines.internal.MainDispatcherLoader {}
 -keepnames class kotlinx.coroutines.android.HandlerContext {}
--keep class com.kaeru.app.** { *; }
+-keep class com.furtabs.paperclip.** { *; }
 -keep class androidx.room.** { *; }
 -keep class kotlin.Metadata { *; }
 -keep class retrofit2.** { *; }

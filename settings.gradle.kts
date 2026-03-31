@@ -19,5 +19,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "KaeruTrack"
+rootProject.name = "Paperclip"
 include(":app")

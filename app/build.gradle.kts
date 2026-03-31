@@ -6,13 +6,11 @@ plugins {
 }
 
 android {
-    namespace = "com.kaeru.app"
-    compileSdk {
-        version = release(36)
-    }
+    namespace = "com.furtabs.paperclip"
+    compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.kaeru.app"
+        applicationId = "com.furtabs.paperclip"
         minSdk = 29
         targetSdk = 36
         versionCode = 50500
@@ -21,11 +19,38 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    fun loadDotEnv(): Map<String, String> {
+        val envFile = rootProject.file(".env")
+        if (!envFile.exists()) return emptyMap()
+        return envFile.readLines()
+            .mapNotNull { line ->
+                val trimmed = line.trim()
+                if (trimmed.isEmpty() || trimmed.startsWith("#")) return@mapNotNull null
+                val delimiterIndex = trimmed.indexOf('=')
+                if (delimiterIndex < 0) return@mapNotNull null
+                val key = trimmed.substring(0, delimiterIndex).trim()
+                var value = trimmed.substring(delimiterIndex + 1).trim()
+                value = value.trim('"', '\'')
+                key to value
+            }
+            .toMap()
+    }
+
+    val dotEnv = loadDotEnv()
+    val uspsApiKeyValue = dotEnv["USPS_API_KEY"] ?: System.getenv("USPS_API_KEY") ?: project.findProperty("USPS_API_KEY")?.toString() ?: ""
+    val uspsClientKeyValue = dotEnv["USPS_CLIENT_KEY"] ?: System.getenv("USPS_CLIENT_KEY") ?: project.findProperty("USPS_CLIENT_KEY")?.toString() ?: ""
+    val uspsClientSecretValue = dotEnv["USPS_CLIENT_SECRET"] ?: System.getenv("USPS_CLIENT_SECRET") ?: project.findProperty("USPS_CLIENT_SECRET")?.toString() ?: ""
+    val uspsTokenUrlValue = dotEnv["USPS_OAUTH_TOKEN_URL"] ?: System.getenv("USPS_OAUTH_TOKEN_URL") ?: project.findProperty("USPS_OAUTH_TOKEN_URL")?.toString() ?: "https://apis.usps.com/oauth2/v3/token"
+
     buildTypes {
         debug {
             applicationIdSuffix = ".debug"
             versionNameSuffix = "-DEBUG"
             isDebuggable = true
+            buildConfigField("String", "USPS_API_KEY", "\"$uspsApiKeyValue\"")
+            buildConfigField("String", "USPS_CLIENT_KEY", "\"$uspsClientKeyValue\"")
+            buildConfigField("String", "USPS_CLIENT_SECRET", "\"$uspsClientSecretValue\"")
+            buildConfigField("String", "USPS_OAUTH_TOKEN_URL", "\"$uspsTokenUrlValue\"")
         }
         release {
             isMinifyEnabled = true
@@ -34,6 +59,10 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            buildConfigField("String", "USPS_API_KEY", "\"$uspsApiKeyValue\"")
+            buildConfigField("String", "USPS_CLIENT_KEY", "\"$uspsClientKeyValue\"")
+            buildConfigField("String", "USPS_CLIENT_SECRET", "\"$uspsClientSecretValue\"")
+            buildConfigField("String", "USPS_OAUTH_TOKEN_URL", "\"$uspsTokenUrlValue\"")
         }
     }
     compileOptions {
@@ -41,7 +70,7 @@ android {
         targetCompatibility = JavaVersion.VERSION_11
     }
     kotlinOptions {
-        jvmTarget = "11"
+        jvmTarget = JavaVersion.VERSION_11.toString()
     }
     buildFeatures {
         compose = true
@@ -58,6 +87,7 @@ dependencies {
     implementation("com.valentinilk.shimmer:compose-shimmer:1.3.3")
     implementation("com.kizitonwose.calendar:compose:2.10.0")
     implementation("androidx.work:work-runtime-ktx:2.11.1")
+    implementation("androidx.security:security-crypto:1.1.0-alpha03")
     implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("com.squareup.okhttp3:okhttp-urlconnection:4.12.0")
     implementation("androidx.navigation:navigation-compose:2.8.5")

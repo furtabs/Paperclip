@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">KaeruTrack</string>
+    <string name="app_name">Paperclip</string>
     <string name="not_now">Not now</string>
     <string name="update_available">Update available!</string>
     <string name="download">Download</string>
@@ -7,7 +7,7 @@
     <string name="unknown">unknown</string>
     <string name="track">Track</string>
     <string name="track_subtitle">Track your package globally.</string>
-    <string name="code_example">AD123456789BR</string>
+    <string name="code_example">1Z999AA10123456784</string>
     <string name="supports">Supports:</string>
     <string name="removed">Removed</string>
     <string name="edit_name">Edit Name</string>
@@ -30,10 +30,12 @@
     <string name="status">Status</string>
     <string name="tracking">Tracking</string>
     <string name="awaiting">Awaiting</string>
-    <string name="carrier_anjun">Anjun Express</string>
-    <string name="carrier_cainiao">Cainiao</string>
-    <string name="carrier_jt"><![CDATA[J&T Express]]></string>
-    <string name="carrier_melhor_envio">Melhor Envio</string>
+    <string name="carrier_usps">USPS</string>
+    <string name="usps_api_key"></string>
+    <string name="transit_calendar_title">Transit Time</string>
+    <string name="transit_calendar_prev">Previous</string>
+    <string name="transit_calendar_next">Next</string>
+    <string name="transit_calendar_close">Close</string>
     <string name="carrier_correios">Correios</string>
     <string name="carrier_loggi">Loggi</string>
     <string name="carrier_shopee_xpress">Shopee Xpress</string>
@@ -49,7 +51,7 @@
     <string name="no_packages_saved">No packages saved.</string>
     <string name="unnamed_package">Unnamed package</string>
     <string name="about">About</string>
-    <string name="creator_name">KKYAGO</string>
+    <string name="creator_name">FURTABS</string>
     <string name="new_version_available">New version available</string>
     <string name="release_notes_title">Release notes</string>
     <string name="no_description">No description</string>
@@ -88,6 +90,7 @@
     <string name="delivered_label">Delivered</string>
     <string name="all_label">All</string>
     <string name="swipe_to_delete">Enable swipe to delete</string>
+    <string name="delete_package">Delete package</string>
     <string name="slim_nav_bar">Slim navigation bar</string>
     <string name="change_default_open_tab">Change default start tab</string>
     <string name="change_default_history_chip">Change default history filter</string>
@@ -103,11 +106,6 @@
     <string name="days_ago">For %1$s days</string>
     <string name="empty_screen_title">It seems kinda empty here...</string>
     <string name="empty_screen_description">No packages yet</string>
-    <string name="cpf_only_numbers">CPF (numbers only)</string>
-    <string name="cpf_incorrect_title">Incorrect CPF</string>
-    <string name="cpf_necessary_title">CPF Required</string>
-    <string name="cpf_incorrect_desc">Data mismatch. Please check if the CPF belongs to the recipient of package: %1$s.</string>
-    <string name="cpf_necessary_desc"><![CDATA[J&T Express requires the recipient\'s CPF to release tracking for package: %1$s.]]></string>
     <string name="updated_just_now">Atualizado agora</string>
     <string name="updated_one_min_ago">Atualizado há 1 min</string>
     <string name="updated_mins_ago">Atualiado a $diffMinutes min</string>
