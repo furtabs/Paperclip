@@ -2,7 +2,8 @@ package com.furtabs.paperclip.tracking
 
 data class TrackingResponse(
     val tracking_code: String?,
-    val events: List<TrackingEvent>?
+    val events: List<TrackingEvent>?,
+    val estimatedDeliveryDate: String? = null
 )
 
 data class TrackingEvent(

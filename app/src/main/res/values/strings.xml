@@ -5,6 +5,8 @@
     <string name="download">Download</string>
     <string name="update_available_description">Version %1$s is now available on GitHub.\n\nDo you want to download it now?</string>
     <string name="unknown">unknown</string>
+    <string name="estimated_arrival">Estimated arrival</string>
+    <string name="by_time">by %1$s</string>
     <string name="track">Track</string>
     <string name="track_subtitle">Track your package globally.</string>
     <string name="code_example">1Z999AA10123456784</string>

@@ -42,10 +42,22 @@ object DateUtils {
 
         try {
             val stdStr = cleanStr.take(10)
-            val formatter = if (stdStr.contains("-")) {
-                DateTimeFormatter.ofPattern("dd-MM-yyyy")
-            } else {
-                DateTimeFormatter.ofPattern("dd/MM/yyyy")
+            val formatter = when {
+                stdStr.contains("-") -> {
+                    if (stdStr.substringBefore("-").length == 4) {
+                        DateTimeFormatter.ofPattern("yyyy-MM-dd")
+                    } else {
+                        DateTimeFormatter.ofPattern("dd-MM-yyyy")
+                    }
+                }
+                stdStr.contains("/") -> {
+                    if (stdStr.substringBefore("/").length == 4) {
+                        DateTimeFormatter.ofPattern("yyyy/MM/dd")
+                    } else {
+                        DateTimeFormatter.ofPattern("dd/MM/yyyy")
+                    }
+                }
+                else -> DateTimeFormatter.ofPattern("ddMMyyyy")
             }
             return LocalDate.parse(stdStr, formatter)
         } catch (e: Exception) { }

@@ -32,9 +32,13 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.furtabs.paperclip.R
+import java.time.format.DateTimeFormatter
+import java.time.format.TextStyle
+import java.util.Locale
 import com.furtabs.paperclip.tracking.TrackingEvent
 import com.furtabs.paperclip.tracking.TrackingViewModel
 import com.furtabs.paperclip.tracking.utils.DateUtils
@@ -212,6 +216,7 @@ fun ResultScreen(
                                     code = result.tracking_code ?: trackingCode,
                                     lastStatus = events.firstOrNull()?.status ?: stringResource(R.string.awaiting),
                                     carrier = stringResource(id = detectCarrier(result.tracking_code ?: trackingCode)),
+                                    estimatedArrival = result.estimatedDeliveryDate,
                                     onCopy = {
                                         clipboardManager.setText(AnnotatedString(it))
                                         Toast.makeText(context,copiedMessage, Toast.LENGTH_SHORT)
@@ -327,82 +332,140 @@ fun TrackingHeaderCardCompact(
     code: String,
     lastStatus: String,
     carrier: String,
+    estimatedArrival: String? = null,
     onCopy: (String) -> Unit
 ) {
     val primaryColor = MaterialTheme.colorScheme.primary
     val isDelivered = lastStatus.isDeliveredStatus()
+    val estimatedArrivalText = estimatedArrival?.takeIf { it.isNotBlank() } ?: stringResource(R.string.unknown)
+    val parsedDate = estimatedArrival?.let { DateUtils.parseToLocalDate(it) }
+    val dayOfWeek = parsedDate?.dayOfWeek?.getDisplayName(TextStyle.FULL, Locale.getDefault())?.uppercase(Locale.getDefault())
+        ?: stringResource(R.string.unknown).uppercase(Locale.getDefault())
+    val dayOfMonth = parsedDate?.dayOfMonth?.toString() ?: "--"
+    val monthYear = parsedDate?.format(DateTimeFormatter.ofPattern("MMM yyyy", Locale.getDefault())) ?: stringResource(R.string.unknown)
+    val timeLabel = estimatedArrival?.split(Regex("\\s+"))
+        ?.firstOrNull { token -> token.contains(":") }
+        ?.let { token -> stringResource(R.string.by_time, token) } ?: stringResource(R.string.by_time, stringResource(R.string.unknown))
 
     Card(
-        shape = RoundedCornerShape(16.dp),
+        shape = RoundedCornerShape(28.dp),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceContainerHigh.copy(alpha = 0.6f)
+            containerColor = MaterialTheme.colorScheme.surfaceContainerHigh.copy(alpha = 0.92f)
         ),
-        modifier = Modifier.fillMaxWidth()
+        elevation = CardDefaults.cardElevation(defaultElevation = 14.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.01f), RoundedCornerShape(28.dp))
     ) {
-        Column(modifier = Modifier.padding(24.dp)) {
+        Column(modifier = Modifier.padding(20.dp)) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.Top
+            ) {
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = dayOfWeek,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        letterSpacing = 1.sp
+                    )
+                    Spacer(modifier = Modifier.height(6.dp))
+                    Text(
+                        text = dayOfMonth,
+                        color = MaterialTheme.colorScheme.onSurface,
+                        fontSize = 46.sp,
+                        fontWeight = FontWeight.ExtraBold,
+                        lineHeight = 44.sp
+                    )
+                    Spacer(modifier = Modifier.height(6.dp))
+                    Text(
+                        text = monthYear,
+                        color = MaterialTheme.colorScheme.onSurface,
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                }
+
+                Spacer(modifier = Modifier.width(16.dp))
+
+                Column(
+                    horizontalAlignment = Alignment.End,
+                    verticalArrangement = Arrangement.Top,
+                    modifier = Modifier.weight(0.9f)
+                ) {
+                    Text(
+                        text = timeLabel,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Medium,
+                        textAlign = TextAlign.End
+                    )
+                    Spacer(modifier = Modifier.height(12.dp))
+                    Surface(
+                        color = primaryColor.copy(alpha = 0.18f),
+                        shape = RoundedCornerShape(28.dp)
+                    ) {
+                        Row(
+                            modifier = Modifier.padding(horizontal = 14.dp, vertical = 7.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Icon(
+                                imageVector = if (isDelivered) Icons.Default.CheckCircle else Icons.Outlined.LocalShipping,
+                                contentDescription = null,
+                                tint = primaryColor,
+                                modifier = Modifier.size(14.dp)
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(
+                                text = if (isDelivered) stringResource(R.string.delivered) else stringResource(R.string.in_transit),
+                                color = primaryColor,
+                                fontSize = 11.sp,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(20.dp))
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(
+                        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.18f),
+                        shape = RoundedCornerShape(18.dp)
+                    )
+                    .padding(vertical = 14.dp, horizontal = 16.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = stringResource(R.string.code),
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    fontSize = 12.sp,
-                    fontWeight = FontWeight.Bold
-                )
-            }
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                val displayCode = if (code.length > 10) code.take(10) + "..." else code
-                Text(
-                    text = displayCode,
+                    text = code.chunked(4).joinToString(" "),
                     color = MaterialTheme.colorScheme.onSurface,
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.weight(1f)
                 )
-                Spacer(modifier = Modifier.width(8.dp))
                 IconButton(
                     onClick = { onCopy(code) },
-                    modifier = Modifier.size(24.dp)
+                    modifier = Modifier
+                        .size(34.dp)
+                        .background(
+                            color = MaterialTheme.colorScheme.surface.copy(alpha = 0.12f),
+                            shape = CircleShape
+                        )
                 ) {
                     Icon(
                         Icons.Default.ContentCopy,
                         contentDescription = stringResource(R.string.copy),
                         tint = primaryColor,
-                        modifier = Modifier.size(16.dp)
+                        modifier = Modifier.size(18.dp)
                     )
-                }
-                Surface(
-                    color = primaryColor.copy(alpha = 0.15f),
-                    shape = CircleShape
-                ) {
-                    Row(
-                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 2.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Icon(
-                            imageVector = if (isDelivered) Icons.Default.CheckCircle else Icons.Outlined.LocalShipping,
-                            contentDescription = null,
-                            tint = primaryColor,
-                            modifier = Modifier.size(12.dp)
-                        )
-                        Spacer(modifier = Modifier.width(4.dp))
-                        Text(
-                            text = if (isDelivered) stringResource(R.string.delivered) else stringResource(R.string.in_transit),
-                            color = primaryColor,
-                            fontSize = 10.sp,
-                            fontWeight = FontWeight.Bold
-                        )
-                    }
                 }
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(18.dp))
 
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Icon(

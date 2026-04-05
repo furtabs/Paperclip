@@ -7,7 +7,13 @@ data class UspsTrackingResponse(
     @SerializedName("trackingNumber") val trackingNumber: String?,
     @SerializedName("status") val status: String?,
     @SerializedName("events") val events: List<UspsTrackingEvent>?,
-    @SerializedName("trackingEvents") val trackingEvents: List<UspsTrackingEvent>?
+    @SerializedName("trackingEvents") val trackingEvents: List<UspsTrackingEvent>?,
+    @SerializedName("deliveryDateExpectation") val deliveryDateExpectation: UspsDeliveryDateExpectation?
+)
+
+data class UspsDeliveryDateExpectation(
+    @SerializedName("predictedDeliveryDate") val predictedDeliveryDate: String?,
+    @SerializedName("endOfDay") val endOfDay: String?
 )
 
 data class UspsTrackingEvent(

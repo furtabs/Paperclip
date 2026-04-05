@@ -222,7 +222,17 @@ class TrackingRepository(private val context: Context) {
                 } else events
 
                 if (finalEvents.isEmpty()) return@withContext null
-                return@withContext TrackingResponse(tracking_code = code, events = finalEvents)
+                val deliveryExpectation = rawData.deliveryDateExpectation
+                val estimatedDeliveryDate = when {
+                    deliveryExpectation?.predictedDeliveryDate.isNullOrBlank() -> null
+                    deliveryExpectation.endOfDay.isNullOrBlank() -> deliveryExpectation.predictedDeliveryDate
+                    else -> "${deliveryExpectation.predictedDeliveryDate} ${deliveryExpectation.endOfDay}"
+                }
+                return@withContext TrackingResponse(
+                    tracking_code = code,
+                    events = finalEvents,
+                    estimatedDeliveryDate = estimatedDeliveryDate
+                )
             } catch (e: Exception) {
                 e.printStackTrace()
                 null
